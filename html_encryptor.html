@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML ENCRYPTOR TOOL</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #000;
+            color: #1dc000;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #1dc000;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 5px #0e5d00;
+        }
+        
+        h2 {
+            color: #0b4b00;
+            margin: 15px 0 5px 0;
+            font-size: 1.2rem;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            background-color: #111;
+            color: #0b4b00;
+            border: 1px solid #26ff00;
+            padding: 10px;
+            font-family: monospace;
+            margin: 5px 0 15px 0;
+        }
+        
+        button {
+            background: #0b4b00;
+            color: #1dc000;
+            border: 1px solid #26ff00;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: monospace;
+            margin: 5px 0;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #0b4b00;
+            text-shadow: 0 0 3px #ff0000;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #0b4b00;
+            font-size: 0.9rem;
+        }
+        
+        .whatsapp-btn {
+            display: block;
+            text-align: center;
+            margin: 20px auto;
+            padding: 8px;
+            background: #0b4b00;
+            color: #1dc000;
+            text-decoration: none;
+            border: 1px solid #26ff00;
+            width: 80%;
+            font-family: monospace;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .button-group button {
+            flex: 1;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <h1>HTML ENCRYPTOR TOOL</h1>
+    
+    <h2>INPUT HTML CODE:</h2>
+    <textarea id="originalHtml" placeholder="PASTE HTML HERE..."></textarea>
+    
+    <button onclick="encryptHtml()">[ ENCRYPTED START ]</button>
+    
+    <h2>ENCRYPTED OUTPUT:</h2>
+    <textarea id="encryptedHtml" readonly></textarea>
+    
+    <div class="button-group">
+        <button onclick="copyEncrypted()">[ COPY CODE ]</button>
+        <button onclick="downloadZip()">[ DOWNLOAD ZIP FILE ]</button>
+    </div>
+    
+    <a href="https://whatsapp.me/2347064123473" class="whatsapp-btn">
+        [ MESSAGE ME FOR MORE ]
+    </a>
+    
+    <div class="footer">
+      © INSPIRED BY OLD HACKER
+    </div>
+
+    <script>
+        function encryptHtml() {
+            const original = document.getElementById('originalHtml').value;
+            if (!original.trim()) {
+                alert('[!] INPUT CODE REQUIRED [!]');
+                return;
+            }
+
+            // Replace special characters with placeholders
+            let replaced = original
+                .replace(/</g, '~lt;')
+                .replace(/>/g, '~gt;')
+                .replace(/\n/g, '~nl;')
+                .replace(/"/g, '~quot;')
+                .replace(/'/g, '~apos;');
+
+            // Base64 encode the replaced string
+            const encoded = btoa(replaced);
+
+            // Create the encrypted HTML string with decode script
+            const encrypted = `<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        function decodeHtml() {
+            let code = "${encoded}";
+            code = atob(code);
+            code = code.replace(/~lt;/g, '<')
+                       .replace(/~gt;/g, '>')
+                       .replace(/~nl;/g, '\\n')
+                       .replace(/~quot;/g, '"')
+                       .replace(/~apos;/g, "'");
+            document.open();
+            document.write(code);
+            document.close();
+        }
+    <\/script>
+</head>
+<body onload="decodeHtml()">
+    Loading...
+</body>
+</html>`;
+
+            document.getElementById('encryptedHtml').value = encrypted;
+        }
+
+        function copyEncrypted() {
+            const encrypted = document.getElementById('encryptedHtml');
+            encrypted.select();
+            encrypted.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand('copy');
+            alert('Encrypted code copied to clipboard!');
+        }
+
+        function downloadZip() {
+            const JSZip = window.JSZip;
+            const zip = new JSZip();
+            const encryptedCode = document.getElementById('encryptedHtml').value;
+
+            if (!encryptedCode.trim()) {
+                alert('[!] NO ENCRYPTED CODE TO DOWNLOAD [!]');
+                return;
+            }
+
+            zip.file("encrypted.html", encryptedCode);
+
+            zip.generateAsync({type:"blob"})
+            .then(function(content) {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+                a.download = "encrypted.zip";
+                a.click();
+                URL.revokeObjectURL(a.href);
+            });
+        }
+    </script>
+</body>
+</html>
